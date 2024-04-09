@@ -100,6 +100,7 @@ usage() {
   echo "  --migrations-git-url                             The Github http url used for building the capture proxy on setups with a dedicated source cluster, default is 'https://github.com/opensearch-project/opensearch-migrations.git'."
   echo "  --migrations-git-branch                          The Github branch associated with the 'git-url' to pull from, default is 'main'."
   echo "  --stage                                          The stage name to use for naming/grouping of AWS deployment resources, default is 'aws-integ'."
+  echo "  --region                                         The region to deploy. If not provided, it will follow CDK defaults."
   echo "  --run-post-actions                               Flag to enable only running post test actions for cleaning up and recording a test run."
   echo "  --create-service-linked-roles                    Flag to create required service linked roles for the AWS account"
   echo "  --bootstrap-region                               Flag to CDK bootstrap the region to allow CDK deployments"
@@ -109,6 +110,7 @@ usage() {
 }
 
 STAGE='aws-integ'
+REGION=''
 RUN_POST_ACTIONS=false
 CREATE_SLR=false
 BOOTSTRAP_REGION=false
@@ -149,6 +151,11 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    --region)
+      REGION="$2"
+      shift # past argument
+      shift # past value
+      ;;
     -h|--h|--help)
       usage
       ;;
@@ -175,6 +182,7 @@ fi
 read -r -d '' cdk_context << EOM
 {
     "stage": "$STAGE",
+    "region": "$REGION"
     "vpcId": "<VPC_ID>",
     "engineVersion": "OS_2.9",
     "domainName": "opensearch-cluster-aws-integ",
