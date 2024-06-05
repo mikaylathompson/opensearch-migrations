@@ -26,7 +26,10 @@ jobs:
         id: generate_cache_key
         run: |
           files=$(find . -type f \( -name 'docker-compose.yml' -o -name 'Dockerfile' \))
-          echo "key=$(echo ${files} | xargs sha1sum | awk '{print $1}')"
+          file_contents=$(cat $files)
+          key=$(${file_contents} | sha1sum | awk '{print $1}')
+          echo "key=${key}"
+          echo "key=${key}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Docker Images
         uses: ScribeMD/docker-cache@0.5.0
