@@ -26,9 +26,7 @@ jobs:
         id: generate_cache_key
         run: |
           files=$(find . -type f \( -name 'docker-compose.yml' -o -name 'Dockerfile' \))
-          file_contents=$(cat $files)
-          key=$(${file_contents} | sha1sum | awk '{print $1}')
-          echo "key=${key}"
+          key=$($(cat $files) | sha1sum | awk '{print $1}')
           echo "key=${key}" >> "$GITHUB_OUTPUT"
 
       - name: Cache Docker Images
