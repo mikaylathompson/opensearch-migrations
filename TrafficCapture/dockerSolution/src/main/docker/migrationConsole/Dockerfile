@@ -41,5 +41,3 @@ WORKDIR /root
 #CMD python3 /root/console_api/manage.py runserver_plus 0.0.0.0:8000
 
 CMD tail -f /dev/null
-
-# This change should invaliate the cache
