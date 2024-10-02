@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@cloudscape-design/components": "^3.0.772",
+    "@cloudscape-design/global-styles": "^1.0.32"
+  }
+}
