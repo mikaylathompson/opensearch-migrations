@@ -1,0 +1,460 @@
+{
+  "variables": [
+    {
+      "type": "property",
+      "property": "region",
+      "inputType": "input",
+      "id": "region",
+      "label": "region",
+      "defaultValue": "us-east-1",
+      "visible": false
+    },
+    {
+      "type": "property",
+      "property": "DomainName",
+      "inputType": "select",
+      "id": "TCDomainName",
+      "label": "Target Cluster Name",
+      "visible": true,
+      "search": "{AWS/ES,ClientId,DomainName} MetricName=CPUUtilization",
+      "populateFrom": "DomainName"
+    },
+    {
+      "type": "pattern",
+      "pattern": "MA_STAGE",
+      "inputType": "input",
+      "id": "stage",
+      "label": "stage",
+      "visible": false,
+      "defaultValue": "STAGE"
+    },
+    {
+      "type": "pattern",
+      "pattern": "ACCOUNT_ID",
+      "inputType": "input",
+      "id": "account_id",
+      "label": "account_id",
+      "visible": false,
+      "defaultValue": "ACCOUNT_ID"
+    }
+  ],
+  "widgets": [
+    {
+      "height": 1,
+      "width": 24,
+      "y": 0,
+      "x": 0,
+      "type": "text",
+      "properties": {
+        "markdown": "# Target Cluster\n",
+        "background": "transparent"
+      }
+    },
+    {
+      "height": 5,
+      "width": 12,
+      "y": 1,
+      "x": 12,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [ { "expression": "METRICS()/1000", "label": "(X,000) -", "id": "e1", "region": "us-east-1" } ],
+          [ "AWS/ES", "SearchableDocuments", "DomainName", "ClusterName", "ClientId", "ACCOUNT_ID", { "region": "us-east-1", "label": "SearchableDocuments - MIN: ${MIN}, MAX ${MAX}, TIME ${MIN_MAX_TIME_RANGE}", "id": "m1", "visible": false } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Target Cluster SearchableDocuments",
+        "period": 60,
+        "stat": "Average",
+        "yAxis": {
+          "left": {
+            "label": "Thousands",
+            "showUnits": false
+          }
+        }
+      }
+    },
+    {
+      "height": 8,
+      "width": 12,
+      "y": 9,
+      "x": 0,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [ "AWS/ES", "4xx", "DomainName", "rfs-blog", "ClientId", "ACCOUNT_ID", { "region": "us-east-1", "label": "4xx - ${SUM}" } ],
+          [ ".", "3xx", ".", ".", ".", ".", { "region": "us-east-1", "label": "3xx - ${SUM}" } ],
+          [ ".", "2xx", ".", ".", ".", ".", { "region": "us-east-1", "label": "2xx - ${SUM}" } ],
+          [ ".", "5xx", ".", ".", ".", ".", { "region": "us-east-1", "label": "5xx - ${SUM}" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "stat": "Sum",
+        "period": 300,
+        "title": "Target Cluster Status Codes (per 5 minutes)"
+      }
+    },
+    {
+      "height": 8,
+      "width": 12,
+      "y": 9,
+      "x": 12,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [ "AWS/ES", "CPUUtilization", "DomainName", "rfs-blog", "ClientId", "ACCOUNT_ID", { "stat": "Minimum", "label": "Min Data Node CPU Utilization", "color": "#2ca02c", "region": "us-east-1" } ],
+          [ "...", { "stat": "Maximum", "label": "Max Data Node CPU Utilization", "color": "#d62728", "region": "us-east-1" } ],
+          [ "...", { "stat": "Average", "label": "Avg Data Node CPU Utilization", "color": "#1f77b4", "region": "us-east-1" } ],
+          [ ".", "MasterCPUUtilization", ".", ".", ".", ".", { "stat": "Minimum", "label": "Min Master Node CPU Utilization", "color": "#98df8a", "region": "us-east-1" } ],
+          [ "...", { "stat": "Maximum", "label": "Max Master Node CPU Utilization", "color": "#ff9896", "region": "us-east-1" } ],
+          [ "...", { "stat": "Average", "label": "Avg Master Node CPU Utilization", "color": "#ff7f0e", "region": "us-east-1" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Target Cluster CPU Utilization by Node",
+        "period": 60,
+        "yAxis": {
+          "left": {
+            "label": "CPU Utilization (%)",
+            "min": 0,
+            "max": 100,
+            "showUnits": false
+          }
+        },
+        "legend": {
+          "position": "bottom"
+        }
+      }
+    },
+    {
+      "height": 1,
+      "width": 24,
+      "y": 17,
+      "x": 0,
+      "type": "text",
+      "properties": {
+        "markdown": "# Reindex From Snapshot Container",
+        "background": "transparent"
+      }
+    },
+    {
+      "height": 8,
+      "width": 12,
+      "y": 18,
+      "x": 0,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [ "AWS/ECS", "CPUUtilization", "ServiceName", "migration-MA_STAGE-reindex-from-snapshot", "ClusterName", "migration-MA_STAGE-ecs-cluster", { "stat": "Minimum", "region": "us-east-1" } ],
+          [ "...", { "stat": "Maximum", "region": "us-east-1" } ],
+          [ "...", { "stat": "Average", "region": "us-east-1" } ]
+        ],
+        "period": 60,
+        "region": "us-east-1",
+        "stacked": false,
+        "title": "RFS CPU utilization",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "height": 8,
+      "width": 12,
+      "y": 18,
+      "x": 12,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [ "AWS/ECS", "MemoryUtilization", "ServiceName", "migration-MA_STAGE-reindex-from-snapshot", "ClusterName", "migration-MA_STAGE-ecs-cluster", { "stat": "Minimum", "region": "us-east-1" } ],
+          [ "...", { "stat": "Maximum", "region": "us-east-1" } ],
+          [ "...", { "stat": "Average", "region": "us-east-1" } ]
+        ],
+        "period": 60,
+        "region": "us-east-1",
+        "stacked": false,
+        "title": "RFS Memory utilization",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "height": 8,
+      "width": 12,
+      "y": 26,
+      "x": 0,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [ "OpenSearchMigrations", "httpRequestCount", "OTelLib", "documentMigration", { "region": "us-east-1", "yAxis": "left", "id": "m1" } ],
+          [ ".", "httpRequestDuration", ".", ".", { "stat": "Average", "region": "us-east-1", "yAxis": "right", "id": "m2", "visible": false } ],
+          [ { "expression": "m1/60 * m2/1000", "label": "Effective Concurrency", "id": "e1", "region": "us-east-1", "visible": false } ]
+        ],
+        "period": 60,
+        "region": "us-east-1",
+        "stacked": false,
+        "title": "RFS Requests Sent",
+        "view": "timeSeries",
+        "stat": "Sum"
+      }
+    },
+    {
+      "height": 2,
+      "width": 24,
+      "y": 34,
+      "x": 0,
+      "type": "text",
+      "properties": {
+        "markdown": "# Kafka\nLogging-traffic-topic commits & bytes",
+        "background": "transparent"
+      }
+    },
+    {
+      "height": 8,
+      "width": 12,
+      "y": 36,
+      "x": 0,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [ "OpenSearchMigrations", "kafkaCommitCount", "OTelLib", "replayer" ],
+          [ "...", "captureProxy", { "yAxis": "left" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "stat": "Sum",
+        "period": 60,
+        "title": "Records Captured & Replayed"
+      }
+    },
+    {
+      "height": 8,
+      "width": 12,
+      "y": 36,
+      "x": 12,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [ "AWS/Kafka", "BytesInPerSec", "Cluster Name", "migration-msk-cluster-aws-integ", "Broker ID", "1", "Topic", "logging-traffic-topic", { "region": "us-east-1" } ],
+          [ ".", "BytesOutPerSec", ".", ".", ".", ".", ".", ".", { "region": "us-east-1", "yAxis": "right" } ],
+          [ "...", "2", ".", ".", { "region": "us-east-1", "yAxis": "right" } ],
+          [ ".", "BytesInPerSec", ".", ".", ".", ".", ".", ".", { "region": "us-east-1" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "stat": "Sum",
+        "period": 60
+      }
+    },
+    {
+      "height": 1,
+      "width": 24,
+      "y": 44,
+      "x": 0,
+      "type": "text",
+      "properties": {
+        "markdown": "# Replay Metrics",
+        "background": "transparent"
+      }
+    },
+    {
+      "height": 8,
+      "width": 12,
+      "y": 45,
+      "x": 0,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [ "OpenSearchMigrations", "tupleComparison", "targetStatusCode", "400", "method", "GET", "sourceStatusCode", "200", "OTelLib", "replayer", "statusCodesMatch", "false", { "region": "us-east-1", "label": "GET (Source 2xx) (Target 4xx)" } ],
+          [ "...", "DELETE", ".", ".", ".", ".", ".", ".", { "region": "us-east-1", "label": "DELETE (Source 2xx) (Target 4xx)" } ],
+          [ "...", "200", ".", "GET", ".", ".", ".", ".", ".", "true", { "region": "us-east-1", "label": "GET (Source 2xx) = (Target 2xx)" } ],
+          [ "...", "400", ".", "PUT", ".", ".", ".", ".", ".", "false", { "region": "us-east-1", "label": "PUT (Source 2xx) (Target 4xx)" } ],
+          [ "...", "200", ".", ".", ".", ".", ".", ".", ".", ".", { "region": "us-east-1", "label": "PUT (Source 2xx) != (Target 2xx)" } ],
+          [ "...", "true", { "region": "us-east-1", "label": "PUT (Source 2xx) = (Target 2xx)" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "stat": "Sum",
+        "period": 60,
+        "title": "Status Code Comparison"
+      }
+    },
+    {
+      "height": 8,
+      "width": 12,
+      "y": 45,
+      "x": 12,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [ { "expression": "METRICS()/1000", "label": "Expression1", "id": "e1" } ],
+          [ "OpenSearchMigrations", "lagBetweenSourceAndTargetRequests", "OTelLib", "replayer", { "region": "us-east-1", "id": "m1", "visible": false } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "stat": "Average",
+        "period": 60,
+        "title": "lagBetweenSourceAndTargetRequests",
+        "yAxis": {
+          "left": {
+            "label": "",
+            "showUnits": true
+          }
+        }
+      }
+    },
+    {
+      "height": 8,
+      "width": 12,
+      "y": 53,
+      "x": 0,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [ { "expression": "100*(m2/(m1+m2))", "label": "Expression1", "id": "e1", "period": 3600, "region": "us-east-1", "visible": false } ],
+          [ "OpenSearchMigrations", "tupleComparison", "OTelLib", "replayer", "statusCodesMatch", "false", { "id": "m1", "region": "us-east-1", "label": "Non-matching Status Codes" } ],
+          [ "...", "true", { "id": "m2", "region": "us-east-1", "label": "Matching Status Codes" } ]
+        ],
+        "sparkline": false,
+        "view": "singleValue",
+        "region": "us-east-1",
+        "stat": "Sum",
+        "period": 3600,
+        "title": "Matching Status Codes",
+        "setPeriodToTimeRange": false,
+        "trend": true,
+        "yAxis": {
+          "left": {
+            "min": 0,
+            "max": 100
+          }
+        },
+        "legend": {
+          "position": "hidden"
+        },
+        "singleValueFullPrecision": true
+      }
+    },
+    {
+      "height": 1,
+      "width": 24,
+      "y": 61,
+      "x": 0,
+      "type": "text",
+      "properties": {
+        "markdown": "# Traffic Replayer Container",
+        "background": "transparent"
+      }
+    },
+    {
+      "height": 8,
+      "width": 12,
+      "y": 62,
+      "x": 0,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [ "AWS/ECS", "MemoryUtilization", "ServiceName", "migration-aws-integ-traffic-replayer-default", "ClusterName", "migration-aws-integ-ecs-cluster", { "stat": "Minimum" } ],
+          [ "...", { "stat": "Maximum" } ],
+          [ "...", { "stat": "Average" } ]
+        ],
+        "period": 60,
+        "region": "us-east-1",
+        "stacked": false,
+        "title": "Replayer Memory utilization",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "height": 8,
+      "width": 12,
+      "y": 62,
+      "x": 12,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [ "AWS/ECS", "CPUUtilization", "ServiceName", "migration-aws-integ-traffic-replayer-default", "ClusterName", "migration-aws-integ-ecs-cluster", { "stat": "Minimum" } ],
+          [ "...", { "stat": "Maximum" } ],
+          [ "...", { "stat": "Average" } ]
+        ],
+        "period": 60,
+        "region": "us-east-1",
+        "stacked": false,
+        "title": "Replayer CPU utilization",
+        "view": "timeSeries"
+      }
+    },
+    {
+      "height": 8,
+      "width": 12,
+      "y": 26,
+      "x": 12,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [ "AWS/ECS", "CPUUtilization", "ServiceName", "migration-MA_STAGE-reindex-from-snapshot", "ClusterName", "migration-MA_STAGE-ecs-cluster", { "region": "us-east-1", "label": "RFS Active Workers - MAX - ${MAX}, AVG - ${AVG}" } ]
+        ],
+        "period": 60,
+        "region": "us-east-1",
+        "stacked": false,
+        "title": "RFS Active Workers",
+        "view": "timeSeries",
+        "stat": "SampleCount"
+      }
+    },
+    {
+      "height": 3,
+      "width": 12,
+      "y": 6,
+      "x": 12,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [ { "expression": "METRICS()/1000", "label": "", "id": "e1", "region": "us-east-1" } ],
+          [ "AWS/ES", "ClusterUsedSpace", "DomainName", "rfs-blog", "ClientId", "ACCOUNT_ID", { "id": "m1", "visible": false, "period": 300, "region": "us-east-1" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Target Cluster Used Space",
+        "period": 60,
+        "stat": "Average",
+        "yAxis": {
+          "left": {
+            "label": "GB",
+            "showUnits": false
+          }
+        }
+      }
+    },
+    {
+      "height": 8,
+      "width": 12,
+      "y": 1,
+      "x": 0,
+      "type": "metric",
+      "properties": {
+        "metrics": [
+          [ { "expression": "RATE(m1) * PERIOD(m1)", "label": "Document Ingested per ${PROP('Period')} seconds - MIN: ${MIN}, MAX: ${MAX}, AVG: ${AVG}", "id": "e1", "region": "us-east-1" } ],
+          [ "AWS/ES", "SearchableDocuments", "DomainName", "ClusterName", "ClientId", "ACCOUNT_ID", { "region": "us-east-1", "label": "MIN: ${MIN}, MAX: ${MAX}, AVG: ${AVG}", "id": "m1", "visible": false, "stat": "Sum" } ]
+        ],
+        "view": "timeSeries",
+        "stacked": false,
+        "region": "us-east-1",
+        "title": "Target Cluster Document Index Rate",
+        "period": 60,
+        "stat": "Average",
+        "yAxis": {
+          "left": {
+            "label": "Count",
+            "showUnits": false
+          }
+        }
+      }
+    }
+  ]
+}

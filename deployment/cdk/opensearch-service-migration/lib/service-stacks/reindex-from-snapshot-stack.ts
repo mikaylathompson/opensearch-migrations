@@ -22,6 +22,9 @@ import {
 import { RFSBackfillYaml, SnapshotYaml } from "../migration-services-yaml";
 import { OtelCollectorSidecar } from "./migration-otel-collector-sidecar";
 import { SharedLogFileSystem } from "../components/shared-log-file-system";
+import { CfnDashboard } from "aws-cdk-lib/aws-cloudwatch";
+import * as rfsDashboard from '../components/reindex-from-snapshot-dashboard.json';
+import {readFileSync} from "fs";
 
 
 export interface ReindexFromSnapshotProps extends StackPropsExt {
@@ -34,6 +37,33 @@ export interface ReindexFromSnapshotProps extends StackPropsExt {
     readonly maxShardSizeGiB?: number,
     readonly reindexFromSnapshotWorkerSize: "default" | "maximum",
 
+}
+
+function setDefaultValueForVariable(variables: any[], variableName: string, defaultValue: string): any[] {
+    for (let i = 0; i < variables.length; i++) {
+        if (variables[i].id === variableName) {
+            variables[i].defaultValue = defaultValue;
+            console.log(`changing ${variables[i].defaultValue} to ${defaultValue}`)
+            break;
+        }
+    }
+    console.log(`returning ${JSON.stringify(variables)}`);
+    return variables;
+}
+
+function setRegionForDashboard(dashboardBody: any, region: string): any {
+    dashboardBody.variables = setDefaultValueForVariable(dashboardBody.variables, 'region', region)
+    return dashboardBody;
+}
+
+function setStageForDashboard(dashboardBody: any, stage: string): any {
+    dashboardBody.variables = setDefaultValueForVariable(dashboardBody.variables, 'stage', stage)
+    return dashboardBody;
+}
+
+function setAccountIdForDashboard(dashboardBody: any, account: string): any {
+    dashboardBody.variables = setDefaultValueForVariable(dashboardBody.variables, 'account_id', account)
+    return dashboardBody;
 }
 
 export class ReindexFromSnapshotStack extends MigrationServiceCore {
@@ -191,6 +221,15 @@ export class ReindexFromSnapshotStack extends MigrationServiceCore {
             },
             ...props
         });
+
+        let dashboard = setRegionForDashboard(rfsDashboard, this.region)
+        dashboard = setStageForDashboard(dashboard, props.stage)
+        dashboard = setAccountIdForDashboard(dashboard, this.account)
+        new CfnDashboard(this, 'RFSDashboard', {
+            dashboardName: `MigrationAssistant_ReindexFromSnapshot_${props.stage}_Dashboard`,
+            dashboardBody: JSON.stringify(dashboard)
+        });
+        // readFileSync("./components/reindex-from-snapshot-dashboard.json", {encoding: "utf-8"})
 
         this.rfsBackfillYaml = new RFSBackfillYaml();
         this.rfsBackfillYaml.ecs.cluster_name = `migration-${props.stage}-ecs-cluster`;
