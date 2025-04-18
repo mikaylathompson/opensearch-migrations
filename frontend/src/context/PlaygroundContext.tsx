@@ -1,10 +1,12 @@
+"use client";
+
 import React, {
   createContext,
   useContext,
   useReducer,
   useEffect,
-  useMemo
-} from 'react';
+  useMemo,
+} from "react";
 
 export interface InputDocument {
   id: string;
@@ -35,74 +37,74 @@ export interface PlaygroundState {
 const initialState: PlaygroundState = {
   inputDocuments: [],
   transformations: [],
-  outputDocuments: []
+  outputDocuments: [],
 };
 
 type ActionType =
-  | { type: 'ADD_INPUT_DOCUMENT'; payload: InputDocument }
-  | { type: 'UPDATE_INPUT_DOCUMENT'; payload: InputDocument }
-  | { type: 'REMOVE_INPUT_DOCUMENT'; payload: string }
-  | { type: 'ADD_TRANSFORMATION'; payload: Transformation }
-  | { type: 'UPDATE_TRANSFORMATION'; payload: Transformation }
-  | { type: 'REMOVE_TRANSFORMATION'; payload: string }
+  | { type: "ADD_INPUT_DOCUMENT"; payload: InputDocument }
+  | { type: "UPDATE_INPUT_DOCUMENT"; payload: InputDocument }
+  | { type: "REMOVE_INPUT_DOCUMENT"; payload: string }
+  | { type: "ADD_TRANSFORMATION"; payload: Transformation }
+  | { type: "UPDATE_TRANSFORMATION"; payload: Transformation }
+  | { type: "REMOVE_TRANSFORMATION"; payload: string }
   | {
-      type: 'REORDER_TRANSFORMATION';
+      type: "REORDER_TRANSFORMATION";
       payload: { fromIndex: number; toIndex: number };
     }
-  | { type: 'ADD_OUTPUT_DOCUMENT'; payload: OutputDocument }
-  | { type: 'UPDATE_OUTPUT_DOCUMENT'; payload: OutputDocument }
-  | { type: 'REMOVE_OUTPUT_DOCUMENT'; payload: string }
-  | { type: 'CLEAR_OUTPUT_DOCUMENTS'; payload?: undefined }
-  | { type: 'SET_STATE'; payload: Partial<PlaygroundState> };
+  | { type: "ADD_OUTPUT_DOCUMENT"; payload: OutputDocument }
+  | { type: "UPDATE_OUTPUT_DOCUMENT"; payload: OutputDocument }
+  | { type: "REMOVE_OUTPUT_DOCUMENT"; payload: string }
+  | { type: "CLEAR_OUTPUT_DOCUMENTS"; payload?: undefined }
+  | { type: "SET_STATE"; payload: Partial<PlaygroundState> };
 
 const playgroundReducer = (
   state: PlaygroundState,
-  action: ActionType
+  action: ActionType,
 ): PlaygroundState => {
   switch (action.type) {
-    case 'ADD_INPUT_DOCUMENT':
+    case "ADD_INPUT_DOCUMENT":
       return {
         ...state,
-        inputDocuments: [...state.inputDocuments, action.payload]
+        inputDocuments: [...state.inputDocuments, action.payload],
       };
-    case 'UPDATE_INPUT_DOCUMENT':
+    case "UPDATE_INPUT_DOCUMENT":
       return {
         ...state,
         inputDocuments: state.inputDocuments.map((doc) =>
-          doc.id === action.payload.id ? action.payload : doc
-        )
+          doc.id === action.payload.id ? action.payload : doc,
+        ),
       };
-    case 'REMOVE_INPUT_DOCUMENT':
+    case "REMOVE_INPUT_DOCUMENT":
       return {
         ...state,
         inputDocuments: state.inputDocuments.filter(
-          (doc) => doc.id !== action.payload
+          (doc) => doc.id !== action.payload,
         ),
-        outputDocuments: []
+        outputDocuments: [],
       };
-    case 'ADD_TRANSFORMATION':
+    case "ADD_TRANSFORMATION":
       return {
         ...state,
         transformations: [...state.transformations, action.payload],
-        outputDocuments: []
+        outputDocuments: [],
       };
-    case 'UPDATE_TRANSFORMATION':
+    case "UPDATE_TRANSFORMATION":
       return {
         ...state,
         transformations: state.transformations.map((transform) =>
-          transform.id === action.payload.id ? action.payload : transform
+          transform.id === action.payload.id ? action.payload : transform,
         ),
-        outputDocuments: []
+        outputDocuments: [],
       };
-    case 'REMOVE_TRANSFORMATION':
+    case "REMOVE_TRANSFORMATION":
       return {
         ...state,
         transformations: state.transformations.filter(
-          (transform) => transform.id !== action.payload
+          (transform) => transform.id !== action.payload,
         ),
-        outputDocuments: []
+        outputDocuments: [],
       };
-    case 'REORDER_TRANSFORMATION': {
+    case "REORDER_TRANSFORMATION": {
       const { fromIndex, toIndex } = action.payload;
       const newTransformations = [...state.transformations];
       const [movedItem] = newTransformations.splice(fromIndex, 1);
@@ -110,37 +112,37 @@ const playgroundReducer = (
       return {
         ...state,
         transformations: newTransformations,
-        outputDocuments: []
+        outputDocuments: [],
       };
     }
-    case 'ADD_OUTPUT_DOCUMENT':
+    case "ADD_OUTPUT_DOCUMENT":
       return {
         ...state,
-        outputDocuments: [...state.outputDocuments, action.payload]
+        outputDocuments: [...state.outputDocuments, action.payload],
       };
-    case 'UPDATE_OUTPUT_DOCUMENT':
+    case "UPDATE_OUTPUT_DOCUMENT":
       return {
         ...state,
         outputDocuments: state.outputDocuments.map((doc) =>
-          doc.id === action.payload.id ? action.payload : doc
-        )
+          doc.id === action.payload.id ? action.payload : doc,
+        ),
       };
-    case 'REMOVE_OUTPUT_DOCUMENT':
+    case "REMOVE_OUTPUT_DOCUMENT":
       return {
         ...state,
         outputDocuments: state.outputDocuments.filter(
-          (doc) => doc.id !== action.payload
-        )
+          (doc) => doc.id !== action.payload,
+        ),
       };
-    case 'CLEAR_OUTPUT_DOCUMENTS':
+    case "CLEAR_OUTPUT_DOCUMENTS":
       return {
         ...state,
-        outputDocuments: []
+        outputDocuments: [],
       };
-    case 'SET_STATE':
+    case "SET_STATE":
       return {
         ...state,
-        ...action.payload
+        ...action.payload,
       };
     default:
       return state;
@@ -154,15 +156,15 @@ type PlaygroundContextType = {
 };
 
 const PlaygroundContext = createContext<PlaygroundContextType | undefined>(
-  undefined
+  undefined,
 );
 
 // This is used to identify this app's state in local storage
-const STORAGE_KEY = 'transformation-playground-state';
+const STORAGE_KEY = "transformation-playground-state";
 
 // Provider to persist/load from localStorage, for input documents and transformations
 export const PlaygroundProvider: React.FC<{ children: React.ReactNode }> = ({
-  children
+  children,
 }) => {
   const [state, dispatch] = useReducer(playgroundReducer, initialState);
 
@@ -173,15 +175,15 @@ export const PlaygroundProvider: React.FC<{ children: React.ReactNode }> = ({
       if (savedState) {
         const parsedState = JSON.parse(savedState);
         dispatch({
-          type: 'SET_STATE',
+          type: "SET_STATE",
           payload: {
             inputDocuments: parsedState.inputDocuments ?? [],
-            transformations: parsedState.transformations ?? []
-          }
+            transformations: parsedState.transformations ?? [],
+          },
         });
       }
     } catch (error) {
-      console.error('Failed to load state from localStorage:', error);
+      console.error("Failed to load state from localStorage:", error);
     }
   }, []);
 
@@ -190,11 +192,11 @@ export const PlaygroundProvider: React.FC<{ children: React.ReactNode }> = ({
     try {
       const stateToSave = {
         inputDocuments: state.inputDocuments,
-        transformations: state.transformations
+        transformations: state.transformations,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(stateToSave));
     } catch (error) {
-      console.error('Failed to save state to localStorage:', error);
+      console.error("Failed to save state to localStorage:", error);
     }
   }, [state.inputDocuments, state.transformations]);
 
@@ -211,7 +213,7 @@ export const PlaygroundProvider: React.FC<{ children: React.ReactNode }> = ({
 export const usePlayground = () => {
   const context = useContext(PlaygroundContext);
   if (context === undefined) {
-    throw new Error('usePlayground must be used within a PlaygroundProvider');
+    throw new Error("usePlayground must be used within a PlaygroundProvider");
   }
   return context;
 };

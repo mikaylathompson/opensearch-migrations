@@ -1,20 +1,20 @@
-import Container from '@cloudscape-design/components/container';
-import Header from '@cloudscape-design/components/header';
-import Button from '@cloudscape-design/components/button';
-import SpaceBetween from '@cloudscape-design/components/space-between';
-import Box from '@cloudscape-design/components/box';
+import Container from "@cloudscape-design/components/container";
+import Header from "@cloudscape-design/components/header";
+import Button from "@cloudscape-design/components/button";
+import SpaceBetween from "@cloudscape-design/components/space-between";
+import Box from "@cloudscape-design/components/box";
 import {
   PlaygroundProvider,
-  usePlayground
-} from '../context/PlaygroundContext';
-import { usePlaygroundActions } from '../hooks/usePlaygroundActions';
+  usePlayground,
+} from "../../context/PlaygroundContext";
+import { usePlaygroundActions } from "../../hooks/usePlaygroundActions";
 
 function InputDocumentSectionContent() {
   const { state } = usePlayground();
   const { addInputDocument } = usePlaygroundActions();
 
   const handleAddDocument = () => {
-    addInputDocument(`Document ${state.inputDocuments.length + 1}`, '');
+    addInputDocument(`Document ${state.inputDocuments.length + 1}`, "");
   };
 
   return (
