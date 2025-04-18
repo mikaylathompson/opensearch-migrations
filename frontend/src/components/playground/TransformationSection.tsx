@@ -1,20 +1,22 @@
-import Container from '@cloudscape-design/components/container';
-import Header from '@cloudscape-design/components/header';
-import Button from '@cloudscape-design/components/button';
-import SpaceBetween from '@cloudscape-design/components/space-between';
-import Box from '@cloudscape-design/components/box';
+"use client";
+
+import Container from "@cloudscape-design/components/container";
+import Header from "@cloudscape-design/components/header";
+import Button from "@cloudscape-design/components/button";
+import SpaceBetween from "@cloudscape-design/components/space-between";
+import Box from "@cloudscape-design/components/box";
 import {
   PlaygroundProvider,
-  usePlayground
-} from '../context/PlaygroundContext';
-import { usePlaygroundActions } from '../hooks/usePlaygroundActions';
+  usePlayground,
+} from "../../context/PlaygroundContext";
+import { usePlaygroundActions } from "../../hooks/usePlaygroundActions";
 
 function TransformationSectionContent() {
   const { state } = usePlayground();
   const { addTransformation } = usePlaygroundActions();
 
   const handleAddTransformation = () => {
-    addTransformation(`Transformation ${state.transformations.length + 1}`, '');
+    addTransformation(`Transformation ${state.transformations.length + 1}`, "");
   };
 
   return (
